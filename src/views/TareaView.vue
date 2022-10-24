@@ -1,5 +1,40 @@
 <template>
-    {{info}}
+            <h5>Buscador de Material</h5>
+        <form action="">
+        <div class="input-group mb-3">
+            <input type="text" v-model="textoABuscar" class="form-control" placeholder="Buscar Material" >
+            <button class="btn btn-outline-secondary" @click.prevent="getMaterial()">Buscar</button>
+        </div>
+       </form> 
+       <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
+                :checked="getMaterial()" v-on:input="$store.state.soloTerminado = $event.target.checked">
+            <label class="form-check-label" for="flexSwitchCheckChecked">Mostrar solo precio mayo a 100</label>
+        </div>
+        <div class="accordion" id="accordionExample">
+
+<div class="accordion-item" v-for="(value, index) in lista">
+    <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            :data-bs-target="`#collapseTwo${index}`" aria-expanded="false"
+            :aria-controls="`collapseTwo${index}`">
+            <input type="checkbox" :checked="value.precio"
+                @click="setearCheckbox(value.precio, value.id)">
+            {{value.nombre}}
+        </button>
+    </h2>
+    <div :id="`collapseTwo${index}`" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            {{value.descripcion}}
+
+            <app-acciones @onAccion="irA($event, value.id)"></app-acciones>
+
+        </div>
+    </div>
+</div>
+
+</div>
     <div>
         <h1>Materiales</h1>
         <table border="1">
@@ -8,17 +43,17 @@
 	<th>Nombre</th>
 	<th>DESCRIPCION</th>
 	<th>PRECIO</th>
-    <th>PRECIO</th>
     <th>DISTRIBUIDORA</th>
 </thead>
 	<tr v-for="data in info ">
 		<td>{{data.id}}</td>
 		<td>{{data.nombre}}</td>
-		<td>{{data.precio}}</td>
 		<td>{{data.descripcion}}</td>
+		<td>{{data.precio}}</td>
 		<td>{{data.distribuidora}}</td>
 	</tr>
 </table>
+<br>
         <form @submit.prevent="agregarMaterial()">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" v-model="tarea.nombre" placeholder="Nombre Material"
@@ -27,51 +62,15 @@
                 aria-describedby="button-addon2">
                 <input type="text" class="form-control" v-model="tarea.precio" placeholder="Precio Material"
                 aria-describedby="button-addon2">
-                <input type="text" class="form-control" v-model="tarea.imagen" placeholder="Imagen Material"
-                aria-describedby="button-addon2">
                 <input type="text" class="form-control" v-model="tarea.distribuidora" placeholder="Distribuidora Material"
                 aria-describedby="button-addon2">
                 <button class="btn btn-outline-secondary" type="submit">Agregar Material</button>
             </div>
         </form>
-        <h5>Buscador de Material {{textoABuscar}}</h5>
-        <form action="">
-        <div class="input-group mb-3">
-            <input type="text" v-model="textoABuscar" class="form-control" placeholder="Buscar Material" >
-            <button class="btn btn-outline-secondary" @click.prevent="getMaterial()">Buscar</button>
-        </div>
-       </form> 
 
-       <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                :checked="$store.state.soloTerminado" v-on:input="$store.state.soloTerminado = $event.target.checked">
-            <label class="form-check-label" for="flexSwitchCheckChecked">Mostrar solo precio mayo a 100
-                {{$store.state.soloTerminado}}</label>
-        </div>
-        <div class="accordion" id="accordionExample">
 
-            <div class="accordion-item" v-for="(value, index) in lista">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        :data-bs-target="`#collapseTwo${index}`" aria-expanded="false"
-                        :aria-controls="`collapseTwo${index}`">
-                        <input type="checkbox" :checked="value.precio"
-                            @click="setearCheckbox(value.precio, value.id)">
-                        {{value.nombre}}
-                    </button>
-                </h2>
-                <div :id="`collapseTwo${index}`" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                    data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                        {{value.descripcion}}
-
-                        <app-acciones @onAccion="irA($event, value.id)"></app-acciones>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
+      
+ 
 
 
     </div>
@@ -112,34 +111,26 @@ export default {
             axios({
                 method: "post",
                 url: process.env.VUE_APP_RUTA_API+"/material",
-                data: this.material
+                data: this.tarea
             })
                 .then(response => {
                     console.log(response);
-                    this.material.nombre = null;
+                    this.info.nombre = null;
+                    
                     this.getMaterial();
                 })
                 .catch(e => console.log(e));
         },
-        getTareas() {
-            axios({
-                method: "get",
-                url: process.env.VUE_APP_RUTA_API+"/tareas/?q="+this.textoABuscar
-            })
-                .then(response => {
-                    this.tareas = response.data;
-                    console.log(response);
-                })
-                .catch(e => console.log(e));
-        },
+    
         getMaterial() {
             axios({
                 method: "get",
                 url: process.env.VUE_APP_RUTA_API+"/material/?q="+this.textoABuscar
-            })
+
+           })
                 .then(response => {
-                    this.material = response.data;
-                    console.log(response);
+                    this.info = response.data;
+               //     console.log(response);
                 })
                 .catch(e => console.log(e));
         },
@@ -160,7 +151,7 @@ export default {
             if (opcion === 'editar') {
                 this.$router.push({ name: 'editarTarea', params: { id: material_id } });
             } else {
-                if (confirm("Esta seguro de eliminar tarea")) {
+                if (confirm("Esta seguro de eliminar el material")) {
                     axios({
                         method: "delete",
                         url: process.env.VUE_APP_RUTA_API+"/material/" + material_id
@@ -176,25 +167,25 @@ export default {
         lista_(){
             
             if(this.$store.state.soloTerminado){
-                return this.material.filter(item =>{
-                    return item.nombre;
+                return this.info.filter(item =>{
+                    return item.precio;
                 });
             }
-            return this.material;
+            return this.info;
         }
     },
     computed: {
         lista(){
             if(this.$store.state.soloTerminado){
-                return this.tareas.filter(item =>{
-                    return item.terminado;
+                return this.material.filter(item =>{
+                    return item.precio;
                 });
             }
-            return this.tareas;
+            return this.info;
         }
     },
     mounted() {
-        this.getTareas()
+        this.getMaterial()
            
     axios
     .get(process.env.VUE_APP_RUTA_API+"/material")

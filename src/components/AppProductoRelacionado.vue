@@ -2,7 +2,7 @@
   <div class="about">
     <div class="container">
         <div class="row">
-            <h4>Productos relacionados</h4>
+            <h4>Productos</h4>
         </div>
         <div class="row" id="appprod">
             <div class="col" v-for="lista in info.data">

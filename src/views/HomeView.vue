@@ -1,6 +1,4 @@
 <template>
-
-<producto></producto>
 <ProductoRelacionado></ProductoRelacionado>
 <pie></pie>
 
